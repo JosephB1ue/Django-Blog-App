@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'blog_app/style.css' %}">
+</head>
+<body>
+<div class="container">
+    <!-- Navigation -->
+    <div id="nav">
+        <span>Have an account? <a href="/api/login/">Login here</a></span>
+    </div>
+<h2>Register</h2>
+<form id="register-form">
+    <input type="text" id="username" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit">Register</button>
+</form>
+<div id="message"></div>
+</div>
+
+<script>
+document.getElementById('register-form').onsubmit = async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const response = await fetch('/api/auth/register/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, password})
+    });
+    const data = await response.json();
+    if (response.ok) {
+        document.getElementById('message').innerText = 'Registration successful! Redirecting...';
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
+        setTimeout(() => {  
+            window.location.href = '/api/'; // Redirect to main blog page
+    }, 1500);    } 
+    else {
+        document.getElementById('message').innerText = data.error;
+    }
+};
+</script>
+</body>
+</html>
